@@ -1,25 +1,28 @@
-/* Mermaid diagrams: scaled to fit the note width, never scrolling */
-.mermaid,
-.block-language-mermaid,
-.cm-preview-code-block.cm-lang-mermaid {
-  overflow: visible !important;
+/* Mermaid diagrams: scaled to fit the note width, never scrolling.
+   Prefixed with `body` to outrank the app's own overflow rules. */
+body .mermaid,
+body .block-language-mermaid,
+body .cm-preview-code-block.cm-lang-mermaid {
+  overflow: visible;
   max-width: 100%;
 }
 
-.mermaid svg {
-  max-width: 100% !important;
+body .mermaid svg {
+  max-width: 100%;
   width: auto;
   height: auto;
   max-height: 80vh;
 }
 
+/* Only the legacy page-break-* properties are used below: Chromium maps them to
+   break-before/-after/-inside, which older Obsidian versions only partly support. */
 @media print {
   /* 1a. Scale to the page: a diagram may be at most 600 px wide AND at most
         200 mm tall, keeping its aspect ratio. Without the height cap a tall
         flowchart is ~300 mm high -> taller than a printed page, so the
         browser pushes it to the next page and leaves the headline alone. */
-  .mermaid svg,
-  .block-language-mermaid svg {
+  body .mermaid svg,
+  body .block-language-mermaid svg {
     width: auto;
     height: auto;
     max-width: 600px;
@@ -30,46 +33,19 @@
         start a page on its own (that stranded the headline on the previous
         page). A rendered diagram is <div class="mermaid">; older versions
         used .block-language-mermaid, so both are covered. */
-  .mermaid,
-  .block-language-mermaid {
-    page-break-inside: avoid !important;
-    break-inside: avoid !important;
-    page-break-before: avoid !important;
-    break-before: avoid !important;
+  body .mermaid,
+  body .block-language-mermaid {
+    page-break-inside: avoid;
+    page-break-before: avoid;
   }
 
-  /* 2. Print / "Export to PDF" DOM: Obsidian wraps every top-level block in
-        its own plain <div>, so headline and diagram are NOT siblings:
-          <div><h2>Headline</h2></div>
-          <div><p>optional text</p></div>
-          <div><div class="mermaid">...</div></div>
-        Break before the headline's wrapper when a diagram follows it
-        directly or after a few text blocks (0, 1 or 2 blocks in between). */
-  .markdown-preview-view > div:has(> :is(h1, h2, h3, h4, h5, h6)):has(+ div :is(.mermaid, .block-language-mermaid)),
-  .markdown-preview-view > div:has(> :is(h1, h2, h3, h4, h5, h6)):has(+ div + div :is(.mermaid, .block-language-mermaid)),
-  .markdown-preview-view > div:has(> :is(h1, h2, h3, h4, h5, h6)):has(+ div + div + div :is(.mermaid, .block-language-mermaid)) {
-    page-break-before: always !important;
-    break-before: page !important;
-
-    /* Keep headline glued to what follows it */
-    page-break-after: avoid !important;
-    break-after: avoid !important;
-  }
-
-  /* 3. Reading view section wrapper: one <div class="el-hN"> per heading
-        section, diagram inside it -> break before the whole section. */
-  :is(.el-h1, .el-h2, .el-h3, .el-h4, .el-h5, .el-h6):has(:is(.mermaid, .block-language-mermaid)) {
-    page-break-before: always !important;
-    break-before: page !important;
-  }
-
-  /* 4. Fallback for DOMs where headline and diagram are direct siblings
-        (reading view / older versions). */
-  :is(h1, h2, h3, h4, h5, h6):has(+ :is(.mermaid, .block-language-mermaid)) {
-    page-break-before: always !important;
-    break-before: page !important;
-    page-break-after: avoid !important;
-    break-after: avoid !important;
+  /* 2. A headline followed by a diagram (directly or after up to two other
+        blocks) starts a new page and stays with what follows it. main.js
+        tags the headline's block with this class, since Obsidian wraps every
+        top-level block in its own <div> and CSS can't select backwards. */
+  body .markdown-preview-view .mermaid-live-link-heading {
+    page-break-before: always;
+    page-break-after: avoid;
   }
 }
 
@@ -83,7 +59,7 @@
 }
 
 @media print {
-  .mermaid-live-link {
+  body .mermaid-live-link {
     display: none;
   }
 }

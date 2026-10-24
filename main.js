@@ -11,6 +11,7 @@ function currentTheme() {
 function buildHref(rawCode) {
   const config = JSON.stringify({ theme: currentTheme() }, null, 2);
   const payload = { code: rawCode, mermaid: config, autoSync: true, updateDiagram: true };
+  // mermaid.live's `#base64:` URL format: the diagram code and config, base64-encoded JSON.
   const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
   return `https://mermaid.live/edit#base64:${encoded}`;
 }
@@ -80,6 +81,20 @@ function mermaidFences(lines) {
     i = end;
   }
   return fences;
+}
+
+const HEADING = /^#{1,6}\s/;
+
+// True if a mermaid diagram follows the heading ending at `lines[from - 1]`, with at most
+// two other blocks in between and no other heading.
+function diagramFollows(lines, from) {
+  let to = from;
+  while (to < lines.length && !HEADING.test(lines[to])) to++;
+  const fence = mermaidFences(lines.slice(from, to))[0];
+  if (!fence) return false;
+  const between = lines.slice(from, from + fence.start);
+  const blocks = between.filter((line, i) => line.trim() && !(i && between[i - 1].trim())).length;
+  return blocks <= 2;
 }
 
 // Links the `.mermaid` diagrams inside `container` to `fences`, in document order.
@@ -174,7 +189,12 @@ module.exports = class MermaidLiveLinkPlugin extends Plugin {
     this.registerMarkdownPostProcessor(async (element, ctx) => {
       const info = ctx.getSectionInfo(element);
       if (info) {
-        const lines = info.text.split('\n').slice(info.lineStart, info.lineEnd + 1);
+        const allLines = info.text.split('\n');
+        const lines = allLines.slice(info.lineStart, info.lineEnd + 1);
+        // Print / PDF export: a headline followed by a diagram starts a new page (styles.css).
+        if (HEADING.test(lines[0]) && diagramFollows(allLines, info.lineEnd + 1)) {
+          element.addClass('mermaid-live-link-heading');
+        }
         const fences = mermaidFences(lines);
         if (!fences.length) return;
         // A plain top-level code block: the section is the diagram itself.

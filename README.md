@@ -37,7 +37,7 @@ The link appears below the rendered diagram, including diagrams inside callouts,
 
 ## Privacy
 
-The plugin makes no network requests. The diagram code is encoded into the link's URL and is only sent to mermaid.live if you click the link.
+The plugin makes no network requests. The diagram code is encoded into the link's URL and is only sent to mermaid.live if you click the link. This is why the code uses `btoa` (base64 encoding): it is the URL format mermaid.live expects.
 
 ## Development
 
@@ -50,7 +50,7 @@ npm version patch   # or minor / major; updates manifest.json and versions.json
 git push --follow-tags
 ```
 
-Pushing the tag triggers the GitHub Action, which publishes a release with `main.js`, `manifest.json` and `styles.css` attached. The tag must equal the version in `manifest.json` (no leading `v`).
+Pushing the tag triggers the GitHub Action, which publishes a release with `main.js`, `manifest.json` and `styles.css` attached, along with GitHub artifact attestations for them. The tag must equal the version in `manifest.json` (no leading `v`).
 
 ## License
 
