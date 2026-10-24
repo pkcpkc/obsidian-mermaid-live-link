@@ -21,9 +21,11 @@
 
 ## Community plugin submission
 
-- [x] Fork `obsidianmd/obsidian-releases`
-- [x] Add an entry to `community-plugins.json` (`id`, `name`, `author`, `description`, `repo`)
-- [ ] Open the pull request and address review feedback (can take weeks)
+Submission is no longer a PR to `obsidianmd/obsidian-releases` (`community-plugins.json` is now mirrored automatically).
+
+- [ ] Sign in at https://community.obsidian.md, link the GitHub account `pkcpkc`, and add the plugin (repo `pkcpkc/obsidian-mermaid-live-link`)
+- [ ] Fix anything the automated review flags, then publish a new release with a bumped version (`npm version patch && git push --follow-tags`)
+- [ ] Delete the now unneeded fork `pkcpkc/obsidian-releases` (`gh repo delete pkcpkc/obsidian-releases`)
 
 ## Likely review points / code improvements
 
