@@ -1,7 +1,7 @@
 {
   "id": "mermaid-live-link",
   "name": "Mermaid Live Link",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "minAppVersion": "0.15.0",
   "description": "Adds an Edit in mermaid.live link beneath Mermaid diagrams and styles them for sizing and clean PDF export.",
   "author": "Paul Hackenberger",
